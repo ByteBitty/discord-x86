@@ -2,8 +2,6 @@
 ;
 ; By Byte1Bit#0632
 
-;%include "io64.inc"
-
 ; you should use rax for the syscall number and rdi, rsi, rdx, r10, r8, and r9 for the parameters.
 BITS 64
 
@@ -24,14 +22,11 @@ section .data
     sockaddr_in:
         sin_family dw 2
         sin_port dw 0x5000
-        sin_addr dd 0xE8879FA2;0x01010101
+        sin_addr dd 0x01010101
         sin_zero dq 0
     sockaddr_inLen equ $ - sockaddr_in
-    
-    msg db "Hello, worl", 0
-    msgLen equ $ - msg
-    
-    request db 'GET /index.html HTTP/1.1', 0Dh, 0Ah, 'Host: 162.159.135.232', 0Dh, 0Ah, 0Dh, 0Ah, 0h ; http requests always end lines with CRLF and end with 2xCRLF (Carriage return + Line feed)
+
+    request db 'GET /index.html HTTP/1.1', 0Dh, 0Ah, 'Host: 1.1.1.1', 0Dh, 0Ah, 0Dh, 0Ah, 0h ; http requests always end lines with CRLF and end request with 2xCRLF (Carriage return + Line feed)
     requestLen equ $ - request
     
 section .bss
@@ -56,10 +51,6 @@ main:
     
     mov rax, [sys_connect]
     mov rdi, [socketfd]
-    ;push dword 0 ;sin_zero[8]
-    ;push dword 16843009; 0x01010101 ;ip
-    ;push word 0x5000 ;port
-    ;push word 2 ;family
     mov rsi, sockaddr_in
     mov rdx, sockaddr_inLen
     syscall ; int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen)
@@ -83,11 +74,6 @@ main:
     mov rdx,bufferLen
     call _stdout
     jmp _read
-    
-    ; Print
-    ;mov rsi, request
-    ;mov rdx, requestLen
-    ;call _stdout
     
     call _exit
     

@@ -1,8 +1,5 @@
 ; Discord bot made in x86_64 NASM
-;
-; By Byte1Bit#0632
 
-; you should use rax for the syscall number and rdi, rsi, rdx, r10, r8, and r9 for the parameters.
 BITS 64
 
 section .data
@@ -17,12 +14,11 @@ section .data
     sys_write dq 1
     
     dns_server dd 0x01b2a8c0
-    ;sys_read dq 0
     
     sockaddr_in:
         sin_family dw 2
         sin_port dw 0x5000
-        sin_addr dd 0x01010101
+        sin_addr dd 0x01010101 ; IP in network order (big endian)
         sin_zero dq 0
     sockaddr_inLen equ $ - sockaddr_in
 
@@ -38,7 +34,7 @@ section .text
 global main
 
 main:
-    mov rbp, rsp; for correct debugging
+    mov rbp, rsp; for debugging
     xor rax,rax
 
     mov rax, [sys_socket]
@@ -81,18 +77,6 @@ _stdout: ;(rdi: buffer,rsi: buffer length)
     mov     rax, 1       ; sys_write()
     mov     rdi, 1       ; Set to STDOUT
     syscall  
-    ret
-    
-_read_to_stdout: ;read(rdi: int fd, rsi: const void *buf, stack: size_t count)
-    xor rax,rax ;sys_read
-    syscall
-    
-    cmp rax, 0
-    jz _exit
-    mov rdx,bufferLen
-    call _stdout
-    jmp _read_to_stdout
-    
     ret
     
 _exit:

@@ -57,7 +57,7 @@ main:
     mov rdx, requestLen ; size_t buffer_size
     syscall ;ssize_t write(int fd, const void *buf, size_t count)
     
-    _read:
+_read:
     xor rax,rax ;sys_read
     mov rdi, [socketfd] ; int file_descriptor
     mov rsi, buffer     ; const void *buffer
@@ -77,6 +77,10 @@ _stdout: ;(rdi: buffer,rsi: buffer length)
     mov     rax, 1       ; sys_write()
     mov     rdi, 1       ; Set to STDOUT
     syscall  
+    ret
+
+_dns_query:
+    
     ret
     
 _exit:
